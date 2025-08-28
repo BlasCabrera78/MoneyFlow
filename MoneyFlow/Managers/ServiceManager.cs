@@ -9,7 +9,8 @@ namespace MoneyFlow.Managers
     {
         public List<ServiceVM> GetAll(int userId) 
         {
-            var list = _dbContext.Services.Where(item => item.UserId == userId)
+            var list = _dbContext.Services
+            .Where(item => item.UserId == userId)
             .Select(item => new ServiceVM
             { 
                 ServiceId = item.ServiceId,
@@ -19,7 +20,23 @@ namespace MoneyFlow.Managers
 
             })
             .ToList();
-            return list;
+
+        return list;
+        }
+
+        public int New(ServiceVM viewModel)
+        {
+            var entity = new Service 
+            {
+                Name = viewModel.Name,
+                Type = viewModel.Type,
+                UserId = viewModel.UserId,  
+            };
+            
+            _dbContext.Services.Add(entity);
+            var rowsAfected = _dbContext.SaveChanges();
+
+            return rowsAfected;
         }
     }
 }
