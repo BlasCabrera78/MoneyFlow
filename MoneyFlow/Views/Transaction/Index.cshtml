@@ -1,0 +1,137 @@
+﻿@{
+}
+
+<div class="row mt-4">
+    <div class="col-sm-6 offs-sm-3">
+        <h2>New Transaction</h2>
+        <form asp-controller="Transaction" asp-action="New" method="post">
+            <div class="mb-3">
+                <label class="form-label">Tipo</label>
+                <select class=" form-select" id="cboTypeService" onchange="ShowServices()">
+                    <option value="0" disabled selected>-- select --</option>
+                    <option value="ingreso">ingreso</option>
+                    <option value="gasto">gasto</option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Service</label>
+                <select class=" form-select" id="cboService">
+                    <option value="0" disabled selected>-- select --</option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Comment</label>
+                <input type="text" class="form-control" id="txtComment" autocomplete="off">
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Date</label>
+                <input type="date" class="form-control" id="txtDate" autocomplete="off">
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Total Amount</label>
+                <input type="number" class="form-control" id="txtTotalAmount" autocomplete="off">
+            </div>
+
+
+
+            <button class="btn btn-success" type="button" onclick="Save()">Save</button>
+
+        </form>
+    </div>
+</div>
+
+@section Styles
+{
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <style>
+        .select2.conteiner .select2-selection-single 
+        {
+            height: 38px;
+            padding-top: 4px
+        }
+    </style>
+}
+
+@section Scripts
+{
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            $('#cboService').select2({
+                placeholder: "-- select --",
+                width: '100%',
+            });
+
+            const today = new Date().toISOString().split('T')[0];
+            $("#txtDate").val(today);
+        });
+
+        async function ShowServices() {
+            const typeService = $("#cboTypeService").val();
+
+            const response = await fetch(`/Transaction/ServiceByType?typeService=${typeService}`, {
+                method: "GET",
+                headers: { 'Content-Type': 'application/json;charset=utf-8' }
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                console.log("Servicios recibidos:", data);
+
+                const serviceSelect = $("#cboService");
+                serviceSelect.empty();
+                serviceSelect.append(new Option("-- select --", ""));
+
+                data.forEach(item => {
+                    serviceSelect.append(new Option(item.name, item.serviceId));
+                });
+
+                serviceSelect.trigger("change.select2");
+            } else {
+                console.error("Error al cargar servicios:", response.status);
+            }
+        }
+
+        async function Save() 
+        {
+            const modelDto = 
+            {
+                comment: $("#txtComment").val(),
+                date: $("#txtDate").val(),
+                totalAmount: $("#txtTotalAmount").val(),
+                serviceId: parseInt($("#cboService").val() || 0),
+            }
+
+            const response = await fetch("/Transaction/New", 
+            {
+                 method: "POST",
+                 headers: { 'Content-Type': 'application/json;charset=utf-8' },
+                 body:JSON.stringify(modelDto)
+            })
+
+            if (response.ok) 
+            {
+                const data = await response.json();
+
+                if (data != 0) {
+                    Swal.fire({
+                        title: "Good job!",
+
+                        icon: "success"
+                    });
+                } else 
+                {
+                    Swal.fire({
+                        title: "Could not registred",
+                        icon: "warning"
+                    });
+                }
+            }
+
+        }
+
+    </script>
+                                                       
+}

@@ -76,5 +76,24 @@ namespace MoneyFlow.Managers
             return affected_rows;
         }
 
+        public List<ServiceVM> GetByType(int userId, string type) 
+        {
+             var list = _dbContext.Services
+                .Where(item =>
+                item.UserId == userId &&
+                item.Type == type)
+                .Select(item => new ServiceVM
+                {
+                    UserId = item.UserId,
+                    ServiceId = item.ServiceId,
+                    Name = item.Name,
+                    Type = item.Type,
+
+                }).ToList();
+
+            return list;
+
+        }
+
     }
 }

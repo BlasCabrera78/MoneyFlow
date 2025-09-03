@@ -14,6 +14,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 );
 
 builder.Services.AddScoped<ServiceManager>();
+builder.Services.AddScoped<TransactionManager>();
 
 var app = builder.Build();
 
