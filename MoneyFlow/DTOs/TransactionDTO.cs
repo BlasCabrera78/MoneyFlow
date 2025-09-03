@@ -1,4 +1,4 @@
-﻿using MoneyFlow.Models.Entities;
+﻿using MoneyFlow.Entities;
 
 namespace MoneyFlow.DTOs
 {

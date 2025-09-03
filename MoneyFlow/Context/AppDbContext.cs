@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using MoneyFlow.Models.Entities;
+using MoneyFlow.Entities;
 
 namespace MoneyFlow.Context
 {

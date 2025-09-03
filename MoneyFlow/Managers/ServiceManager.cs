@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using MoneyFlow.Context;
 using MoneyFlow.Models;
-using MoneyFlow.Models.Entities;
+using MoneyFlow.Entities;
 
 namespace MoneyFlow.Managers
 {

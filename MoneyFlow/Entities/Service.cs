@@ -1,4 +1,4 @@
-﻿namespace MoneyFlow.Models.Entities;
+﻿namespace MoneyFlow.Entities;
 
 public class Service
 {

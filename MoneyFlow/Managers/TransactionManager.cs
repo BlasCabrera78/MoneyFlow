@@ -1,6 +1,6 @@
 ﻿using MoneyFlow.Context;
 using MoneyFlow.DTOs;
-using MoneyFlow.Models.Entities;
+using MoneyFlow.Entities;
 
 namespace MoneyFlow.Managers
 {
