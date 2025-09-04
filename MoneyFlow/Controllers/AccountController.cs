@@ -1,9 +1,14 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using MoneyFlow.Managers;
 using MoneyFlow.Models;
+using System.Security.Claims;
 
 namespace MoneyFlow.Controllers
 {
+    [AllowAnonymous]
     public class AccountController(UserManager _userManager): Controller
     {
         public IActionResult Login()
@@ -13,7 +18,7 @@ namespace MoneyFlow.Controllers
         }
 
         [HttpPost]
-        public IActionResult Login(LoginVM viewModel)
+        public async Task<IActionResult> Login(LoginVM viewModel)
         {
             if (!ModelState.IsValid) return View(viewModel);
 
@@ -24,12 +29,27 @@ namespace MoneyFlow.Controllers
                 return View();
             }
 
-            else 
+            else
             {
-                return RedirectToAction("Index", "Home");
-            }
+                List<Claim> claims = new List<Claim>()
+                {
+                    new Claim(ClaimTypes.NameIdentifier, found.UserId.ToString()),
+                    new Claim(ClaimTypes.Name, found.FullName)
+                };
 
-            return View();
+                ClaimsIdentity claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+
+                await HttpContext.SignInAsync
+                    (
+                        CookieAuthenticationDefaults.AuthenticationScheme,
+                        new ClaimsPrincipal(claimsIdentity),
+                        new AuthenticationProperties() { AllowRefresh = true }
+
+                    );
+
+                return RedirectToAction("Index","Home");
+
+            }
         }
 
         public IActionResult Register() 

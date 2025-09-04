@@ -1,10 +1,13 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using MoneyFlow.DTOs;
 using MoneyFlow.Managers;
 using MoneyFlow.Models;
+using System.Security.Claims;
 
 namespace MoneyFlow.Controllers
 {
+    [Authorize]
     public class TransactionController(
         ServiceManager _serviceManager,
         TransactionManager _transactionManager) : Controller
@@ -17,15 +20,16 @@ namespace MoneyFlow.Controllers
         [HttpGet]
         public IActionResult ServiceByType(string typeService)
         {
-            var userId = 1;
-            var services = _serviceManager.GetByType(userId, typeService);
+            var UserId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)!.Value;
+            var services = _serviceManager.GetByType(int.Parse(UserId), typeService);
             return Ok(services);
         }
 
         [HttpPost]
         public IActionResult New([FromBody] TransactionDTO modelDto)
         {
-            modelDto.UserId = 1;
+            var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)!.Value;
+            modelDto.UserId = int.Parse(userId);
             var response = _transactionManager.New(modelDto);
             return Ok(response);
         }
@@ -33,7 +37,8 @@ namespace MoneyFlow.Controllers
         [HttpGet]
         public IActionResult HistoryTransaction(DateOnly startDate, DateOnly EndDate, int UserId)
         {
-            var userId = 1;
+            var User_Id = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)!.Value;
+            var userId = int.Parse(User_Id);
             var list = _transactionManager.GetHistorial(startDate, EndDate, userId);
             return Ok(new {data = list });
         }
